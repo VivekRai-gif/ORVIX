@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 from typing import Optional, List
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, AliasChoices
 
 router = APIRouter()
 
@@ -23,22 +23,64 @@ def get_model():
     return MODEL_PIPELINE
 
 class CaseContextRequest(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     amount: float = Field(..., example=4500.0)
-    failure_reason: str = Field(..., example="INSUFFICIENT_FUNDS")
-    payment_method: str = Field(..., example="card")
-    customer_segment: str = Field(..., example="RETURNING")
-    previous_successful_payments: int = Field(0, example=5)
-    previous_failed_payments: int = Field(0, example=1)
-    historical_recovery_rate: float = Field(0.50, example=0.75)
-    attempt_count: int = Field(0, example=0)
-    contact_count: int = Field(0, example=0)
-    time_since_failure: float = Field(0.0, example=2.5)
-    action: str = Field("RETRY", example="RETRY")
+    failure_reason: str = Field(
+        ...,
+        validation_alias=AliasChoices("failure_reason", "failureReason"),
+        example="INSUFFICIENT_FUNDS"
+    )
+    payment_method: str = Field(
+        "card",
+        validation_alias=AliasChoices("payment_method", "paymentMethod"),
+        example="card"
+    )
+    customer_segment: str = Field(
+        "RETURNING",
+        validation_alias=AliasChoices("customer_segment", "customerSegment"),
+        example="RETURNING"
+    )
+    previous_successful_payments: int = Field(
+        0,
+        validation_alias=AliasChoices("previous_successful_payments", "previousSuccessfulPayments"),
+        example=5
+    )
+    previous_failed_payments: int = Field(
+        0,
+        validation_alias=AliasChoices("previous_failed_payments", "previousFailedPayments"),
+        example=1
+    )
+    historical_recovery_rate: float = Field(
+        0.50,
+        validation_alias=AliasChoices("historical_recovery_rate", "historicalRecoveryRate"),
+        example=0.75
+    )
+    attempt_count: int = Field(
+        0,
+        validation_alias=AliasChoices("attempt_count", "attemptCount"),
+        example=0
+    )
+    contact_count: int = Field(
+        0,
+        validation_alias=AliasChoices("contact_count", "contactCount"),
+        example=0
+    )
+    time_since_failure: float = Field(
+        0.0,
+        validation_alias=AliasChoices("time_since_failure", "timeSinceFailure"),
+        example=2.5
+    )
+    action: str = Field(
+        "RETRY",
+        validation_alias=AliasChoices("action"),
+        example="RETRY"
+    )
 
 class SinglePredictionResponse(BaseModel):
-    probability: float
-    modelVersion: str = "v1"
-    action: str
+    probability: float = Field(..., example=0.71)
+    modelVersion: str = Field("v1", example="v1")
+    action: Optional[str] = Field(None, example="RETRY")
 
 class CandidatePrediction(BaseModel):
     action: str
@@ -56,19 +98,19 @@ def predict_single_action(request: CaseContextRequest):
     try:
         model = get_model()
         
-        # Prepare DataFrame input matching model training features
+        # Prepare DataFrame input matching model training features exactly
         input_data = pd.DataFrame([{
-            "amount": request.amount,
-            "failure_reason": request.failure_reason,
-            "payment_method": request.payment_method,
-            "customer_segment": request.customer_segment,
-            "previous_successful_payments": request.previous_successful_payments,
-            "previous_failed_payments": request.previous_failed_payments,
-            "historical_recovery_rate": request.historical_recovery_rate,
-            "attempt_count": request.attempt_count,
-            "contact_count": request.contact_count,
-            "time_since_failure": request.time_since_failure,
-            "action": request.action.upper()
+            "amount": float(request.amount),
+            "failure_reason": str(request.failure_reason),
+            "payment_method": str(request.payment_method),
+            "customer_segment": str(request.customer_segment),
+            "previous_successful_payments": int(request.previous_successful_payments),
+            "previous_failed_payments": int(request.previous_failed_payments),
+            "historical_recovery_rate": float(request.historical_recovery_rate),
+            "attempt_count": int(request.attempt_count),
+            "contact_count": int(request.contact_count),
+            "time_since_failure": float(request.time_since_failure),
+            "action": str(request.action).upper()
         }])
 
         proba = float(model.predict_proba(input_data)[0, 1])
@@ -77,7 +119,7 @@ def predict_single_action(request: CaseContextRequest):
         return SinglePredictionResponse(
             probability=prob_rounded,
             modelVersion=MODEL_VERSION,
-            action=request.action.upper()
+            action=str(request.action).upper()
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
@@ -96,17 +138,21 @@ def predict_all_actions(request: CaseContextRequest):
 
         rankings = []
         for act in actions:
+            # Override attempt_count and contact_count based on candidate action
+            attempts = 1 if act in ["RETRY", "HUMAN_ESCALATION"] else 0
+            contacts = 1 if act in ["PAYMENT_LINK", "EMAIL", "HUMAN_ESCALATION"] else 0
+
             input_data = pd.DataFrame([{
-                "amount": request.amount,
-                "failure_reason": request.failure_reason,
-                "payment_method": request.payment_method,
-                "customer_segment": request.customer_segment,
-                "previous_successful_payments": request.previous_successful_payments,
-                "previous_failed_payments": request.previous_failed_payments,
-                "historical_recovery_rate": request.historical_recovery_rate,
-                "attempt_count": request.attempt_count,
-                "contact_count": request.contact_count,
-                "time_since_failure": request.time_since_failure,
+                "amount": float(request.amount),
+                "failure_reason": str(request.failure_reason),
+                "payment_method": str(request.payment_method),
+                "customer_segment": str(request.customer_segment),
+                "previous_successful_payments": int(request.previous_successful_payments),
+                "previous_failed_payments": int(request.previous_failed_payments),
+                "historical_recovery_rate": float(request.historical_recovery_rate),
+                "attempt_count": attempts,
+                "contact_count": contacts,
+                "time_since_failure": float(request.time_since_failure),
                 "action": act
             }])
 
@@ -130,3 +176,4 @@ def predict_all_actions(request: CaseContextRequest):
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Batch prediction error: {str(e)}")
+
