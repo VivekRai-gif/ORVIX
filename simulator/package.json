@@ -1,0 +1,16 @@
+{
+  "name": "orvix-simulator",
+  "version": "1.0.0",
+  "description": "ORVIX Synthetic Event & Razorpay Webhook Simulator",
+  "main": "generate.js",
+  "type": "module",
+  "scripts": {
+    "start": "node generate.js",
+    "simulator:generate": "node generate.js",
+    "simulator:seed": "node seed.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "dotenv": "^16.4.7"
+  }
+}

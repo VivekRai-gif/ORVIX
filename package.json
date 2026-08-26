@@ -1,0 +1,14 @@
+{
+  "name": "orvix-root",
+  "version": "1.0.0",
+  "description": "ORVIX AI Revenue Recovery Intelligence & Orchestrator",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "simulator:generate": "npm --prefix simulator run simulator:generate",
+    "simulator:seed": "npm --prefix simulator run simulator:seed",
+    "backend:seed": "npm --prefix backend run seed",
+    "dev:backend": "npm --prefix backend run dev",
+    "dev:frontend": "npm --prefix frontend run dev"
+  }
+}
