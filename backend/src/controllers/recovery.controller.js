@@ -7,6 +7,8 @@ import {
   AuditLog
 } from '../models/index.js';
 import { isDbConnected } from '../config/db.js';
+import { runOrchestrator } from '../agents/recoveryOrchestrator.js';
+import { processActionOutcome } from '../services/outcomeService.js';
 
 /**
  * POST /api/recovery/cases
@@ -205,12 +207,11 @@ export const getRecoveryCaseById = async (req, res, next) => {
 
 /**
  * POST /api/recovery/cases/:id/decide
- * Select an action for the case
+ * Run Recovery Orchestrator to diagnose case, compute ERVs, apply merchant policies, and return full decision
  */
 export const decideRecoveryCase = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { action = 'intelligent_retry', reason = 'AI Recommendation' } = req.body;
 
     if (!isDbConnected()) {
       return res.status(503).json({ success: false, error: 'Database disconnected.' });
@@ -221,23 +222,11 @@ export const decideRecoveryCase = async (req, res, next) => {
       return res.status(404).json({ success: false, error: `Recovery case '${id}' not found.` });
     }
 
-    rCase.selectedAction = action;
-    if (rCase.status === 'AT_RISK' || rCase.status === 'open') {
-      rCase.status = 'in_progress';
-    }
-    await rCase.save();
-
-    await AuditLog.create({
-      caseId: id,
-      eventType: 'ACTION_SELECTED',
-      actor: 'ai_engine',
-      message: `Selected action '${action}' for case ${id}. Reason: ${reason}`,
-      metadata: { action, reason }
-    });
+    const decision = await runOrchestrator(id);
 
     return res.status(200).json({
       success: true,
-      case: rCase
+      ...decision
     });
   } catch (error) {
     next(error);
@@ -370,6 +359,32 @@ export const escalateRecoveryCase = async (req, res, next) => {
     return res.status(200).json({
       success: true,
       case: rCase
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/recovery/cases/:id/outcome
+ * Record outcome of a recovery action (RECOVERED, FAILED, PENDING, STOPPED, ESCALATED, EXPIRED)
+ */
+export const recordActionOutcomeController = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { executionId, outcome, failureReason, metadata } = req.body;
+
+    const result = await processActionOutcome({
+      caseId: id,
+      executionId,
+      outcome,
+      failureReason,
+      metadata
+    });
+
+    return res.status(200).json({
+      success: true,
+      ...result
     });
   } catch (error) {
     next(error);

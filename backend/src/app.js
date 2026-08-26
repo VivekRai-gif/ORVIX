@@ -2,9 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRoutes from './routes/api.routes.js';
+import razorpayWebhookRoutes from './routes/razorpayWebhook.js';
 import errorHandler from './middleware/errorHandler.js';
-
-dotenv.config();
 
 const app = express();
 
@@ -24,15 +23,20 @@ app.use(
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-razorpay-signature', 'x-razorpay-event-id']
   })
 );
 
-// Middleware
-app.use(express.json());
+// Middleware with rawBody capture for webhook cryptographic verification
+app.use(express.json({
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.use('/api', razorpayWebhookRoutes);
 app.use('/api', apiRoutes);
 
 // Centralized Error Handler

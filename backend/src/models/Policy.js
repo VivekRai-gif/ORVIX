@@ -36,7 +36,12 @@ const policySchema = new mongoose.Schema(
     },
     allowedChannels: {
       type: [String],
-      default: ['retry', 'payment_link', 'email']
+      default: ['retry', 'payment_link', 'email', 'human_escalation']
+    },
+    highValueThreshold: {
+      type: Number,
+      default: 50000,
+      min: 0
     }
   },
   {

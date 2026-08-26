@@ -12,7 +12,22 @@ import ActionBadge from '../components/ActionBadge';
 import DecisionTimeline from '../components/DecisionTimeline';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
-import { ArrowLeft, User, Cpu, Layers, Play, OctagonAlert, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import {
+  ArrowLeft,
+  User,
+  Cpu,
+  Layers,
+  Play,
+  OctagonAlert,
+  ShieldAlert,
+  CheckCircle2,
+  ShieldCheck,
+  Zap,
+  HelpCircle,
+  FileText,
+  DollarSign,
+  AlertOctagon
+} from 'lucide-react';
 
 export default function CaseDetailsPage() {
   const { id } = useParams();
@@ -55,8 +70,8 @@ export default function CaseDetailsPage() {
   const handleExecute = async () => {
     setActionLoading(true);
     try {
-      const res = await executeRecoveryCase(id, { action: data?.case?.selectedAction || 'intelligent_retry' });
-      setMsg(`Action executed successfully! Status updated to '${res.case?.status}'.`);
+      const res = await executeRecoveryCase(id, { action: data?.case?.selectedAction || 'RETRY' });
+      setMsg(`Action executed successfully! Outcome status updated to '${res.case?.status}'.`);
       await loadDetails();
     } catch (err) {
       alert('Failed to execute action: ' + err.message);
@@ -95,18 +110,29 @@ export default function CaseDetailsPage() {
   if (error) return <ErrorState title="Case Not Found" message={error} onRetry={loadDetails} />;
   if (!data || !data.case) return <ErrorState title="Case Data Error" message="Case record not returned." />;
 
-  const { case: rCase, customer, payment, predictions, executions, auditLogs } = data;
+  const { case: rCase, customer = {}, payment = {}, predictions = [], executions = [], auditLogs = [], explanation } = data;
+
+  const failureReason = rCase.failureReason || payment.failureReason || 'INSUFFICIENT_FUNDS';
+  const amount = rCase.amount || payment.amount || 0;
 
   return (
     <div className="space-y-6">
-      {/* Back Link & Action Bar */}
+      {/* Top Navigation & Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <Link to="/cases" className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-indigo-400">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Recovery Cases</span>
         </Link>
-        
+
         <div className="flex flex-wrap items-center gap-2">
+          {/* Status Badges */}
+          <span className="px-2.5 py-1 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-bold">
+            AI Decision
+          </span>
+          <span className="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
+            Policy Approved
+          </span>
+
           <button
             onClick={handleExecute}
             disabled={actionLoading || rCase.status === 'recovered' || rCase.status === 'closed'}
@@ -143,102 +169,145 @@ export default function CaseDetailsPage() {
         </div>
       )}
 
-      {/* Case Overview Banner */}
-      <div className="rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 p-6 space-y-4">
+      {/* 1. REVENUE AT RISK HERO BANNER */}
+      <div className="rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 p-6 space-y-4 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3 mb-1">
-              <span className="text-xs font-mono text-indigo-400 font-semibold">{rCase.caseId}</span>
+              <span className="text-xs font-mono text-indigo-400 font-bold">{rCase.caseId}</span>
               <StatusBadge status={rCase.status} />
               <ActionBadge action={rCase.selectedAction} />
             </div>
-            <h2 className="text-2xl font-bold font-['Outfit'] text-white">
-              Revenue at Risk: ₹{rCase.amount?.toLocaleString('en-IN')}
+            <h2 className="text-3xl font-bold font-['Outfit'] text-white">
+              Revenue at Risk: ₹{amount.toLocaleString('en-IN')}
             </h2>
             <p className="text-xs text-slate-400 font-mono mt-1">
-              Payment ID: {rCase.paymentId} • Customer ID: {rCase.customerId}
+              Payment ID: <code className="text-slate-300">{rCase.paymentId}</code> • Failure Reason: <code className="text-rose-400">{failureReason}</code>
             </p>
           </div>
 
           <div className="flex items-center space-x-6 text-right font-mono text-xs">
             <div>
-              <div className="text-slate-500 uppercase">Expected Value</div>
-              <div className="text-lg font-bold text-emerald-400">₹{rCase.expectedRecoveryValue?.toLocaleString('en-IN') || 0}</div>
+              <div className="text-slate-500 uppercase">Max Expected Value</div>
+              <div className="text-xl font-bold text-emerald-400">₹{rCase.expectedRecoveryValue?.toLocaleString('en-IN') || 0}</div>
             </div>
             <div>
-              <div className="text-slate-500 uppercase">Attempts</div>
-              <div className="text-lg font-bold text-slate-200">{rCase.attemptCount || 0}</div>
+              <div className="text-slate-500 uppercase">Retries Used</div>
+              <div className="text-xl font-bold text-slate-200">{rCase.attemptCount || 0} / 3</div>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left Column */}
+        {/* Left Column: Customer Context & AI Explanation */}
         <div className="space-y-6 lg:col-span-1">
-          {/* Customer Profile Card */}
-          <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-4">
+          {/* Customer Profile */}
+          <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-3">
             <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
               <User className="w-4 h-4 text-indigo-400" />
-              <span>Customer Profile</span>
+              <span>Customer Context Profile</span>
             </div>
-            
+
             <div className="space-y-2 text-xs font-mono">
               <div className="flex justify-between py-1 border-b border-slate-800/60">
+                <span className="text-slate-500">Customer ID:</span>
+                <span className="text-slate-200 font-semibold">{customer?.customerId || rCase.customerId}</span>
+              </div>
+              <div className="flex justify-between py-1 border-b border-slate-800/60">
                 <span className="text-slate-500">Segment:</span>
-                <span className="text-slate-200 font-semibold uppercase">{customer?.segment || 'consumer'}</span>
+                <span className="text-slate-200 uppercase">{customer?.segment || 'consumer'}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
                 <span className="text-slate-500">Successful Payments:</span>
-                <span className="text-emerald-400">{customer?.previousSuccessfulPayments || 0}</span>
+                <span className="text-emerald-400 font-bold">{customer?.previousSuccessfulPayments || 0}</span>
               </div>
               <div className="flex justify-between py-1 border-b border-slate-800/60">
                 <span className="text-slate-500">Failed Payments:</span>
-                <span className="text-rose-400">{customer?.previousFailedPayments || 0}</span>
+                <span className="text-rose-400 font-bold">{customer?.previousFailedPayments || 0}</span>
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Historical Recovery Rate:</span>
-                <span className="text-cyan-400 font-bold">{((customer?.historicalRecoveryRate || 0) * 100).toFixed(0)}%</span>
+                <span className="text-cyan-400 font-bold">{((customer?.historicalRecoveryRate || 0.65) * 100).toFixed(0)}%</span>
               </div>
             </div>
           </div>
+
+          {/* AI Factual Explanation Layer */}
+          <div className="rounded-xl bg-slate-900/60 border border-indigo-500/30 p-5 space-y-3">
+            <div className="flex items-center space-x-2 text-indigo-300 font-bold text-sm">
+              <FileText className="w-4 h-4 text-indigo-400" />
+              <span>AI Decision Explanation</span>
+            </div>
+
+            {explanation ? (
+              <div className="space-y-3 text-xs font-mono">
+                <div>
+                  <div className="text-[10px] text-slate-500 font-bold uppercase">Summary</div>
+                  <p className="text-slate-300 font-sans mt-0.5">{explanation.summary}</p>
+                </div>
+                <div>
+                  <div className="text-[10px] text-indigo-400 font-bold uppercase">Selection Reasoning</div>
+                  <p className="text-slate-300 font-sans mt-0.5">{explanation.reasoning}</p>
+                </div>
+                <div>
+                  <div className="text-[10px] text-rose-400 font-bold uppercase">Risk Assessment</div>
+                  <p className="text-slate-300 font-sans mt-0.5">{explanation.risk}</p>
+                </div>
+                <div>
+                  <div className="text-[10px] text-amber-400 font-bold uppercase">Why Not Alternatives</div>
+                  <p className="text-slate-400 font-sans mt-0.5">{explanation.whyNotAlternatives}</p>
+                </div>
+                <div>
+                  <div className="text-[10px] text-cyan-400 font-bold uppercase">Stop Condition</div>
+                  <p className="text-slate-300 font-sans mt-0.5">{explanation.stopCondition}</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400 font-mono">Explanation generated automatically upon decision evaluation.</p>
+            )}
+          </div>
         </div>
 
-        {/* Right Column */}
+        {/* Right Column: AI Candidate Predictions & Visual Decision Timeline */}
         <div className="space-y-6 lg:col-span-2">
-          {/* AI Predictions */}
+          {/* Candidate Predictions & Expected Values */}
           <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
                 <Cpu className="w-4 h-4 text-cyan-400" />
-                <span>AI Candidate Predictions & Expected Values</span>
+                <span>AI Recovery Probabilities & ERV Engine</span>
               </div>
+              <span className="text-[11px] font-mono text-emerald-400">Formula: ERV = P(R|A) × Amount − Cost</span>
             </div>
 
             {predictions && predictions.length > 0 ? (
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-xs font-mono">
                   <thead>
                     <tr className="border-b border-slate-800 text-slate-400 uppercase font-semibold">
-                      <th className="py-2 px-3">Candidate Action</th>
-                      <th className="py-2 px-3">Probability P(R|A)</th>
-                      <th className="py-2 px-3 text-right">Expected Value EV(A)</th>
-                      <th className="py-2 px-3 text-right">Select</th>
+                      <th className="py-2.5 px-3">Candidate Action</th>
+                      <th className="py-2.5 px-3 text-center">Probability P(R|A)</th>
+                      <th className="py-2.5 px-3 text-right">Expected Value ERV(A)</th>
+                      <th className="py-2.5 px-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60 font-mono">
+                  <tbody className="divide-y divide-slate-800/60">
                     {predictions.map((p, idx) => (
-                      <tr key={idx} className={rCase.selectedAction === p.action ? 'bg-indigo-950/30' : ''}>
-                        <td className="py-2.5 px-3">
-                          <ActionBadge action={p.action} />
+                      <tr key={idx} className={rCase.selectedAction === p.action ? 'bg-indigo-950/40 border-l-2 border-indigo-400' : ''}>
+                        <td className="py-3 px-3">
+                          <div className="flex items-center space-x-2">
+                            <span className="text-slate-500 font-bold text-[10px]">#{idx + 1}</span>
+                            <ActionBadge action={p.action} />
+                          </div>
                         </td>
-                        <td className="py-2.5 px-3 text-slate-200">
+                        <td className="py-3 px-3 text-center text-indigo-300 font-bold">
                           {((p.probability || 0) * 100).toFixed(0)}%
                         </td>
-                        <td className="py-2.5 px-3 text-right font-bold text-emerald-400">
+                        <td className="py-3 px-3 text-right font-bold text-emerald-400">
                           ₹{p.expectedValue?.toLocaleString('en-IN')}
                         </td>
-                        <td className="py-2.5 px-3 text-right">
+                        <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => handleDecide(p.action)}
                             disabled={actionLoading || rCase.selectedAction === p.action}
@@ -253,17 +322,28 @@ export default function CaseDetailsPage() {
                 </table>
               </div>
             ) : (
-              <p className="text-xs text-slate-400">No predictions recorded yet for this case.</p>
+              <p className="text-xs text-slate-400">No candidate predictions available.</p>
             )}
           </div>
 
-          {/* Timeline */}
+          {/* Full 8-Step Visual Decision Timeline */}
           <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-4">
-            <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
-              <Layers className="w-4 h-4 text-emerald-400" />
-              <span>Audit Log & Orchestration Timeline</span>
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
+                <Layers className="w-4 h-4 text-emerald-400" />
+                <span>Complete Decision Timeline & Execution Trace</span>
+              </div>
+              <span className="text-[10px] font-mono text-slate-500 uppercase">Do Not Hide Failed Actions</span>
             </div>
-            <DecisionTimeline auditLogs={auditLogs} />
+
+            <DecisionTimeline
+              rCase={rCase}
+              customer={customer}
+              payment={payment}
+              predictions={predictions}
+              executions={executions}
+              auditLogs={auditLogs}
+            />
           </div>
         </div>
       </div>

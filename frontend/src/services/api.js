@@ -92,9 +92,14 @@ export const fetchAuditLogs = async (params = {}) => {
   return response.data;
 };
 
-// Experiments
+// Experiments & Analytics
 export const fetchExperimentStats = async () => {
   const response = await api.get('/experiments/stats');
+  return response.data;
+};
+
+export const fetchAnalyticsExperiments = async () => {
+  const response = await api.get('/analytics/experiments');
   return response.data;
 };
 

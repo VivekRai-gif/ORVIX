@@ -1,0 +1,89 @@
+{
+  "totalCases": 1000,
+  "revenueAtRisk": 61772855,
+  "primaryMetric": {
+    "name": "Incremental Revenue Recovered",
+    "formula": "ORVIX recovered revenue - baseline recovered revenue",
+    "value": 13333550
+  },
+  "incrementalRevenueRecovered": 13333550,
+  "incrementalRecoveryRate": 19.5,
+  "reductionInCustomerFriction": "20.8%",
+  "baseline": {
+    "strategyName": "Baseline Recovery Strategy",
+    "totalCases": 1000,
+    "recoveredCasesCount": 622,
+    "revenueRecovered": 44457644,
+    "recoveryRate": 62.2,
+    "totalInterventions": 2167,
+    "retryCount": 1436,
+    "contactCount": 731,
+    "escalationCount": 0,
+    "stopCount": 378,
+    "avgRecoveryTimeHours": 12.8,
+    "interventionCost": 2898
+  },
+  "orvix": {
+    "strategyName": "ORVIX Dynamic Strategy",
+    "totalCases": 1000,
+    "recoveredCasesCount": 817,
+    "revenueRecovered": 57791194,
+    "recoveryRate": 81.7,
+    "totalInterventions": 1717,
+    "retryCount": 783,
+    "contactCount": 468,
+    "escalationCount": 466,
+    "stopCount": 83,
+    "avgRecoveryTimeHours": 9.8,
+    "interventionCost": 48319
+  },
+  "comparisonChart": [
+    {
+      "category": "Revenue Recovered (₹)",
+      "Baseline": 44457644,
+      "ORVIX": 57791194
+    },
+    {
+      "category": "Recovery Rate (%)",
+      "Baseline": 62.2,
+      "ORVIX": 81.7
+    },
+    {
+      "category": "Total Interventions",
+      "Baseline": 2167,
+      "ORVIX": 1717
+    },
+    {
+      "category": "Unnecessary Retries",
+      "Baseline": 1436,
+      "ORVIX": 783
+    },
+    {
+      "category": "Intervention Cost (₹)",
+      "Baseline": 2898,
+      "ORVIX": 48319
+    }
+  ],
+  "actionDistribution": [
+    {
+      "action": "RETRY",
+      "Baseline": 1436,
+      "ORVIX": 783
+    },
+    {
+      "action": "PAYMENT_LINK",
+      "Baseline": 731,
+      "ORVIX": 468
+    },
+    {
+      "action": "HUMAN_ESCALATION",
+      "Baseline": 0,
+      "ORVIX": 466
+    },
+    {
+      "action": "STOP",
+      "Baseline": 378,
+      "ORVIX": 83
+    }
+  ]
+}

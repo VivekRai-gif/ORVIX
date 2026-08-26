@@ -9,8 +9,10 @@ import {
   decideRecoveryCase,
   executeRecoveryAction,
   stopRecoveryCase,
-  escalateRecoveryCase
+  escalateRecoveryCase,
+  recordActionOutcomeController
 } from '../controllers/recovery.controller.js';
+
 import { getPolicy, updatePolicy } from '../controllers/policies.controller.js';
 import { getAuditLogs } from '../controllers/audit.controller.js';
 import { getExperimentStats } from '../controllers/experiments.controller.js';
@@ -35,6 +37,7 @@ router.get('/recovery/cases', getRecoveryCases);
 router.get('/recovery/cases/:id', getRecoveryCaseById);
 router.post('/recovery/cases/:id/decide', decideRecoveryCase);
 router.post('/recovery/cases/:id/execute', executeRecoveryAction);
+router.post('/recovery/cases/:id/outcome', recordActionOutcomeController);
 router.post('/recovery/cases/:id/stop', stopRecoveryCase);
 router.post('/recovery/cases/:id/escalate', escalateRecoveryCase);
 
@@ -50,5 +53,6 @@ router.get('/audit-logs', getAuditLogs);
 
 // Experiment Analytics APIs
 router.get('/experiments/stats', getExperimentStats);
+router.get('/analytics/experiments', getExperimentStats);
 
 export default router;
