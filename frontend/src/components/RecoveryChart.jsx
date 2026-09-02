@@ -15,12 +15,12 @@ import {
   Legend
 } from 'recharts';
 
-const COLORS = ['#6366F1', '#06B6D4', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6'];
+const COLORS = ['#2563EB', '#60A5FA', '#10B981', '#F59E0B', '#EF4444', '#94A3B8'];
 
 export default function RecoveryChart({ type = 'bar', data = [], xKey = 'name', yKeys = ['value'], height = 300 }) {
   if (!data || data.length === 0) {
     return (
-      <div className="flex items-center justify-center h-48 border border-dashed border-slate-800 rounded-lg text-xs text-slate-500">
+      <div className="flex items-center justify-center h-48 border border-dashed border-[#1E293B] rounded-lg text-xs text-[#64748B]">
         No chart data available
       </div>
     );
@@ -45,7 +45,7 @@ export default function RecoveryChart({ type = 'bar', data = [], xKey = 'name', 
             <XAxis dataKey={xKey} stroke="#64748B" fontSize={11} />
             <YAxis stroke="#64748B" fontSize={11} />
             <Tooltip
-              contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+              contentStyle={{ backgroundColor: '#171E2E', borderColor: '#1E293B', borderRadius: '8px', fontSize: '12px', color: '#F8FAFC' }}
             />
             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
             <Area type="monotone" dataKey={yKeys[0] || 'atRisk'} name="Revenue at Risk (₹)" stroke="#EF4444" fillOpacity={1} fill="url(#colorAtRisk)" />
@@ -72,7 +72,7 @@ export default function RecoveryChart({ type = 'bar', data = [], xKey = 'name', 
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+              contentStyle={{ backgroundColor: '#171E2E', borderColor: '#1E293B', borderRadius: '8px', fontSize: '12px', color: '#F8FAFC' }}
             />
             <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
           </PieChart>
@@ -82,7 +82,7 @@ export default function RecoveryChart({ type = 'bar', data = [], xKey = 'name', 
             <XAxis dataKey={xKey} stroke="#64748B" fontSize={11} />
             <YAxis stroke="#64748B" fontSize={11} />
             <Tooltip
-              contentStyle={{ backgroundColor: '#0F172A', borderColor: '#334155', borderRadius: '8px', fontSize: '12px' }}
+              contentStyle={{ backgroundColor: '#171E2E', borderColor: '#1E293B', borderRadius: '8px', fontSize: '12px', color: '#F8FAFC' }}
             />
             <Legend wrapperStyle={{ fontSize: '12px', paddingTop: '10px' }} />
             {yKeys.map((key, index) => (

@@ -2,17 +2,17 @@ import React from 'react';
 
 export default function ActionBadge({ action }) {
   if (!action) {
-    return <span className="text-xs text-slate-500 font-mono">--</span>;
+    return <span className="text-xs text-[#71717A] font-mono">--</span>;
   }
 
   const normalized = action.toLowerCase();
 
   const styles = {
-    intelligent_retry: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-    payment_link: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-    email_reminder: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    human_escalation: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-    stop: 'bg-slate-800 text-slate-400 border-slate-700'
+    intelligent_retry: 'bg-[#2563EB]/12 text-[#60A5FA] border-[#2563EB]/30',
+    payment_link: 'bg-[#3B82F6]/12 text-[#60A5FA] border-[#3B82F6]/30',
+    email_reminder: 'bg-[#1E293B] text-[#94A3B8] border-[#334155]',
+    human_escalation: 'bg-[#F59E0B]/12 text-[#F59E0B] border-[#F59E0B]/25',
+    stop: 'bg-[#111827] text-[#64748B] border-[#1E293B]'
   };
 
   const labels = {
@@ -24,7 +24,7 @@ export default function ActionBadge({ action }) {
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border ${styles[normalized] || 'bg-slate-800 text-slate-300 border-slate-700'}`}>
+    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium border ${styles[normalized] || 'bg-[#171E2E] text-[#94A3B8] border-[#1E293B]'}`}>
       {labels[normalized] || action}
     </span>
   );

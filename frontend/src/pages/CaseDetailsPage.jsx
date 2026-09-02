@@ -119,24 +119,24 @@ export default function CaseDetailsPage() {
     <div className="space-y-6">
       {/* Top Navigation & Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <Link to="/cases" className="inline-flex items-center space-x-2 text-xs font-semibold text-slate-400 hover:text-indigo-400">
+        <Link to="/cases" className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94A3B8] hover:text-[#60A5FA] transition-colors">
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Recovery Cases</span>
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Status Badges */}
-          <span className="px-2.5 py-1 rounded bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-mono font-bold">
+          <span className="px-2.5 py-1 rounded bg-[#3B82F6]/12 border border-[#3B82F6]/25 text-[#60A5FA] text-xs font-mono font-bold">
             AI Decision
           </span>
-          <span className="px-2.5 py-1 rounded bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold">
+          <span className="px-2.5 py-1 rounded bg-[#10B981]/12 border border-[#10B981]/25 text-[#10B981] text-xs font-mono font-bold">
             Policy Approved
           </span>
 
           <button
             onClick={handleExecute}
             disabled={actionLoading || rCase.status === 'recovered' || rCase.status === 'closed'}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-lg shadow-emerald-600/20 disabled:opacity-40 transition-colors"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#10B981] hover:bg-[#10B981]/90 text-[#F8FAFC] text-xs font-semibold shadow-lg shadow-[#10B981]/20 disabled:opacity-40 transition-colors"
           >
             <Play className="w-3.5 h-3.5" />
             <span>Execute Action</span>
@@ -145,55 +145,55 @@ export default function CaseDetailsPage() {
           <button
             onClick={handleStop}
             disabled={actionLoading || rCase.status === 'closed'}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 disabled:opacity-40 transition-colors"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-[#F8FAFC] text-xs font-semibold border border-[#334155] disabled:opacity-40 transition-colors"
           >
-            <OctagonAlert className="w-3.5 h-3.5 text-cyan-400" />
+            <OctagonAlert className="w-3.5 h-3.5 text-[#60A5FA]" />
             <span>Stop Interventions</span>
           </button>
 
           <button
             onClick={handleEscalate}
             disabled={actionLoading || rCase.status === 'escalated'}
-            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-rose-950/60 hover:bg-rose-900/60 text-rose-300 border border-rose-800 text-xs font-semibold disabled:opacity-40 transition-colors"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-[#EF4444]/15 hover:bg-[#EF4444]/25 text-[#EF4444] border border-[#EF4444]/30 text-xs font-semibold disabled:opacity-40 transition-colors"
           >
-            <ShieldAlert className="w-3.5 h-3.5 text-rose-400" />
+            <ShieldAlert className="w-3.5 h-3.5 text-[#EF4444]" />
             <span>Escalate Case</span>
           </button>
         </div>
       </div>
 
       {msg && (
-        <div className="p-3.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-semibold flex items-center space-x-2">
-          <CheckCircle2 className="w-4 h-4 text-indigo-400" />
+        <div className="p-3.5 rounded-xl bg-[#3B82F6]/12 border border-[#3B82F6]/25 text-[#60A5FA] text-xs font-semibold flex items-center space-x-2">
+          <CheckCircle2 className="w-4 h-4 text-[#60A5FA]" />
           <span>{msg}</span>
         </div>
       )}
 
       {/* 1. REVENUE AT RISK HERO BANNER */}
-      <div className="rounded-xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 p-6 space-y-4 shadow-xl">
+      <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-6 space-y-4 shadow-xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
             <div className="flex items-center space-x-3 mb-1">
-              <span className="text-xs font-mono text-indigo-400 font-bold">{rCase.caseId}</span>
+              <span className="text-xs font-mono text-[#60A5FA] font-bold">{rCase.caseId}</span>
               <StatusBadge status={rCase.status} />
               <ActionBadge action={rCase.selectedAction} />
             </div>
-            <h2 className="text-3xl font-bold font-['Outfit'] text-white">
+            <h2 className="text-3xl font-bold font-['Outfit'] text-[#F8FAFC]">
               Revenue at Risk: ₹{amount.toLocaleString('en-IN')}
             </h2>
-            <p className="text-xs text-slate-400 font-mono mt-1">
-              Payment ID: <code className="text-slate-300">{rCase.paymentId}</code> • Failure Reason: <code className="text-rose-400">{failureReason}</code>
+            <p className="text-xs text-[#94A3B8] font-mono mt-1">
+              Payment ID: <code className="text-[#F8FAFC]">{rCase.paymentId}</code> • Failure Reason: <code className="text-[#EF4444]">{failureReason}</code>
             </p>
           </div>
 
           <div className="flex items-center space-x-6 text-right font-mono text-xs">
             <div>
-              <div className="text-slate-500 uppercase">Max Expected Value</div>
-              <div className="text-xl font-bold text-emerald-400">₹{rCase.expectedRecoveryValue?.toLocaleString('en-IN') || 0}</div>
+              <div className="text-[#64748B] uppercase">Max Expected Value</div>
+              <div className="text-xl font-bold text-[#10B981]">₹{rCase.expectedRecoveryValue?.toLocaleString('en-IN') || 0}</div>
             </div>
             <div>
-              <div className="text-slate-500 uppercase">Retries Used</div>
-              <div className="text-xl font-bold text-slate-200">{rCase.attemptCount || 0} / 3</div>
+              <div className="text-[#64748B] uppercase">Retries Used</div>
+              <div className="text-xl font-bold text-[#F8FAFC]">{rCase.attemptCount || 0} / 3</div>
             </div>
           </div>
         </div>
@@ -203,68 +203,68 @@ export default function CaseDetailsPage() {
         {/* Left Column: Customer Context & AI Explanation */}
         <div className="space-y-6 lg:col-span-1">
           {/* Customer Profile */}
-          <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-3">
-            <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
-              <User className="w-4 h-4 text-indigo-400" />
+          <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-5 space-y-3">
+            <div className="flex items-center space-x-2 text-[#F8FAFC] font-bold text-sm">
+              <User className="w-4 h-4 text-[#60A5FA]" />
               <span>Customer Context Profile</span>
             </div>
 
             <div className="space-y-2 text-xs font-mono">
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-500">Customer ID:</span>
-                <span className="text-slate-200 font-semibold">{customer?.customerId || rCase.customerId}</span>
+              <div className="flex justify-between py-1 border-b border-[#1E293B]">
+                <span className="text-[#64748B]">Customer ID:</span>
+                <span className="text-[#F8FAFC] font-semibold">{customer?.customerId || rCase.customerId}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-500">Segment:</span>
-                <span className="text-slate-200 uppercase">{customer?.segment || 'consumer'}</span>
+              <div className="flex justify-between py-1 border-b border-[#1E293B]">
+                <span className="text-[#64748B]">Segment:</span>
+                <span className="text-[#F8FAFC] uppercase">{customer?.segment || 'consumer'}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-500">Successful Payments:</span>
-                <span className="text-emerald-400 font-bold">{customer?.previousSuccessfulPayments || 0}</span>
+              <div className="flex justify-between py-1 border-b border-[#1E293B]">
+                <span className="text-[#64748B]">Successful Payments:</span>
+                <span className="text-[#10B981] font-bold">{customer?.previousSuccessfulPayments || 0}</span>
               </div>
-              <div className="flex justify-between py-1 border-b border-slate-800/60">
-                <span className="text-slate-500">Failed Payments:</span>
-                <span className="text-rose-400 font-bold">{customer?.previousFailedPayments || 0}</span>
+              <div className="flex justify-between py-1 border-b border-[#1E293B]">
+                <span className="text-[#64748B]">Failed Payments:</span>
+                <span className="text-[#EF4444] font-bold">{customer?.previousFailedPayments || 0}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-slate-500">Historical Recovery Rate:</span>
-                <span className="text-cyan-400 font-bold">{((customer?.historicalRecoveryRate || 0.65) * 100).toFixed(0)}%</span>
+                <span className="text-[#64748B]">Historical Recovery Rate:</span>
+                <span className="text-[#60A5FA] font-bold">{((customer?.historicalRecoveryRate || 0.65) * 100).toFixed(0)}%</span>
               </div>
             </div>
           </div>
 
           {/* AI Factual Explanation Layer */}
-          <div className="rounded-xl bg-slate-900/60 border border-indigo-500/30 p-5 space-y-3">
-            <div className="flex items-center space-x-2 text-indigo-300 font-bold text-sm">
-              <FileText className="w-4 h-4 text-indigo-400" />
+          <div className="rounded-xl bg-[#171E2E] border border-[#3B82F6]/30 p-5 space-y-3">
+            <div className="flex items-center space-x-2 text-[#60A5FA] font-bold text-sm">
+              <FileText className="w-4 h-4 text-[#60A5FA]" />
               <span>AI Decision Explanation</span>
             </div>
 
             {explanation ? (
               <div className="space-y-3 text-xs font-mono">
                 <div>
-                  <div className="text-[10px] text-slate-500 font-bold uppercase">Summary</div>
-                  <p className="text-slate-300 font-sans mt-0.5">{explanation.summary}</p>
+                  <div className="text-[10px] text-[#64748B] font-bold uppercase">Summary</div>
+                  <p className="text-[#94A3B8] font-sans mt-0.5">{explanation.summary}</p>
                 </div>
                 <div>
-                  <div className="text-[10px] text-indigo-400 font-bold uppercase">Selection Reasoning</div>
-                  <p className="text-slate-300 font-sans mt-0.5">{explanation.reasoning}</p>
+                  <div className="text-[10px] text-[#60A5FA] font-bold uppercase">Selection Reasoning</div>
+                  <p className="text-[#94A3B8] font-sans mt-0.5">{explanation.reasoning}</p>
                 </div>
                 <div>
-                  <div className="text-[10px] text-rose-400 font-bold uppercase">Risk Assessment</div>
-                  <p className="text-slate-300 font-sans mt-0.5">{explanation.risk}</p>
+                  <div className="text-[10px] text-[#EF4444] font-bold uppercase">Risk Assessment</div>
+                  <p className="text-[#94A3B8] font-sans mt-0.5">{explanation.risk}</p>
                 </div>
                 <div>
-                  <div className="text-[10px] text-amber-400 font-bold uppercase">Why Not Alternatives</div>
-                  <p className="text-slate-400 font-sans mt-0.5">{explanation.whyNotAlternatives}</p>
+                  <div className="text-[10px] text-[#F59E0B] font-bold uppercase">Why Not Alternatives</div>
+                  <p className="text-[#94A3B8] font-sans mt-0.5">{explanation.whyNotAlternatives}</p>
                 </div>
                 <div>
-                  <div className="text-[10px] text-cyan-400 font-bold uppercase">Stop Condition</div>
-                  <p className="text-slate-300 font-sans mt-0.5">{explanation.stopCondition}</p>
+                  <div className="text-[10px] text-[#60A5FA] font-bold uppercase">Stop Condition</div>
+                  <p className="text-[#94A3B8] font-sans mt-0.5">{explanation.stopCondition}</p>
                 </div>
               </div>
             ) : (
-              <p className="text-xs text-slate-400 font-mono">Explanation generated automatically upon decision evaluation.</p>
+              <p className="text-xs text-[#94A3B8] font-mono">Explanation generated automatically upon decision evaluation.</p>
             )}
           </div>
         </div>
@@ -272,46 +272,46 @@ export default function CaseDetailsPage() {
         {/* Right Column: AI Candidate Predictions & Visual Decision Timeline */}
         <div className="space-y-6 lg:col-span-2">
           {/* Candidate Predictions & Expected Values */}
-          <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-4">
+          <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-5 space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
-                <Cpu className="w-4 h-4 text-cyan-400" />
+              <div className="flex items-center space-x-2 text-[#F8FAFC] font-bold text-sm">
+                <Cpu className="w-4 h-4 text-[#60A5FA]" />
                 <span>AI Recovery Probabilities & ERV Engine</span>
               </div>
-              <span className="text-[11px] font-mono text-emerald-400">Formula: ERV = P(R|A) × Amount − Cost</span>
+              <span className="text-[11px] font-mono text-[#10B981]">Formula: ERV = P(R|A) × Amount − Cost</span>
             </div>
 
             {predictions && predictions.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs font-mono">
                   <thead>
-                    <tr className="border-b border-slate-800 text-slate-400 uppercase font-semibold">
+                    <tr className="border-b border-[#1E293B] text-[#64748B] uppercase font-semibold">
                       <th className="py-2.5 px-3">Candidate Action</th>
                       <th className="py-2.5 px-3 text-center">Probability P(R|A)</th>
                       <th className="py-2.5 px-3 text-right">Expected Value ERV(A)</th>
                       <th className="py-2.5 px-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-[#1E293B]">
                     {predictions.map((p, idx) => (
-                      <tr key={idx} className={rCase.selectedAction === p.action ? 'bg-indigo-950/40 border-l-2 border-indigo-400' : ''}>
+                      <tr key={idx} className={rCase.selectedAction === p.action ? 'bg-[#3B82F6]/10 border-l-2 border-[#3B82F6]' : ''}>
                         <td className="py-3 px-3">
                           <div className="flex items-center space-x-2">
-                            <span className="text-slate-500 font-bold text-[10px]">#{idx + 1}</span>
+                            <span className="text-[#64748B] font-bold text-[10px]">#{idx + 1}</span>
                             <ActionBadge action={p.action} />
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-center text-indigo-300 font-bold">
+                        <td className="py-3 px-3 text-center text-[#60A5FA] font-bold">
                           {((p.probability || 0) * 100).toFixed(0)}%
                         </td>
-                        <td className="py-3 px-3 text-right font-bold text-emerald-400">
+                        <td className="py-3 px-3 text-right font-bold text-[#10B981]">
                           ₹{p.expectedValue?.toLocaleString('en-IN')}
                         </td>
                         <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => handleDecide(p.action)}
                             disabled={actionLoading || rCase.selectedAction === p.action}
-                            className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-[11px] font-sans text-indigo-300 disabled:opacity-40"
+                            className="px-2.5 py-1 rounded bg-[#1E293B] hover:bg-[#334155] text-[11px] font-sans text-[#60A5FA] disabled:opacity-40 transition-colors"
                           >
                             {rCase.selectedAction === p.action ? 'Selected' : 'Select'}
                           </button>
@@ -322,18 +322,18 @@ export default function CaseDetailsPage() {
                 </table>
               </div>
             ) : (
-              <p className="text-xs text-slate-400">No candidate predictions available.</p>
+              <p className="text-xs text-[#94A3B8]">No candidate predictions available.</p>
             )}
           </div>
 
           {/* Full 8-Step Visual Decision Timeline */}
-          <div className="rounded-xl bg-slate-900/60 border border-slate-800 p-5 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center space-x-2 text-slate-200 font-bold text-sm">
-                <Layers className="w-4 h-4 text-emerald-400" />
+          <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-5 space-y-4">
+            <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
+              <div className="flex items-center space-x-2 text-[#F8FAFC] font-bold text-sm">
+                <Layers className="w-4 h-4 text-[#10B981]" />
                 <span>Complete Decision Timeline & Execution Trace</span>
               </div>
-              <span className="text-[10px] font-mono text-slate-500 uppercase">Do Not Hide Failed Actions</span>
+              <span className="text-[10px] font-mono text-[#64748B] uppercase">Do Not Hide Failed Actions</span>
             </div>
 
             <DecisionTimeline

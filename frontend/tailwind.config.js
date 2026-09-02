@@ -8,17 +8,26 @@ export default {
     extend: {
       colors: {
         orvix: {
-          dark: '#0B0F19',
-          card: '#111827',
-          border: '#1F2937',
-          accent: '#6366F1',
+          bg: '#0B0F19',
+          surface: '#111827',
+          card: '#171E2E',
+          cardHover: '#1E293B',
+          input: '#0F172A',
+          border: '#1E293B',
+          borderHover: '#334155',
+          primary: '#2563EB',
+          primaryHover: '#3B82F6',
+          accentBlue: '#60A5FA',
+          text: '#F8FAFC',
+          textSecondary: '#94A3B8',
+          textMuted: '#64748B',
           success: '#10B981',
           warning: '#F59E0B',
           danger: '#EF4444',
-          cyan: '#06B6D4'
         }
       }
     },
   },
   plugins: [],
 }
+

@@ -2,17 +2,17 @@ import React from 'react';
 
 export default function KPICard({ title, value, subtitle, icon: Icon, trend, color = 'indigo' }) {
   const colorStyles = {
-    indigo: 'bg-indigo-500/10 border-indigo-500/20 text-indigo-400',
-    emerald: 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400',
-    amber: 'bg-amber-500/10 border-amber-500/20 text-amber-400',
-    cyan: 'bg-cyan-500/10 border-cyan-500/20 text-cyan-400',
-    rose: 'bg-rose-500/10 border-rose-500/20 text-rose-400'
+    indigo: 'bg-[#2563EB]/12 border-[#2563EB]/25 text-[#60A5FA]',
+    emerald: 'bg-[#10B981]/12 border-[#10B981]/25 text-[#10B981]',
+    amber: 'bg-[#F59E0B]/12 border-[#F59E0B]/25 text-[#F59E0B]',
+    cyan: 'bg-[#60A5FA]/12 border-[#60A5FA]/25 text-[#60A5FA]',
+    rose: 'bg-[#EF4444]/12 border-[#EF4444]/25 text-[#EF4444]'
   };
 
   return (
-    <div className="rounded-xl bg-slate-900/70 border border-slate-800/80 p-5 space-y-3 hover:border-slate-700 transition-colors">
+    <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-5 space-y-3 hover:border-[#334155] hover:bg-[#1E293B] transition-colors">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">{title}</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#64748B]">{title}</span>
         {Icon && (
           <div className={`p-2 rounded-lg border ${colorStyles[color] || colorStyles.indigo}`}>
             <Icon className="w-4 h-4" />
@@ -21,12 +21,12 @@ export default function KPICard({ title, value, subtitle, icon: Icon, trend, col
       </div>
 
       <div className="space-y-1">
-        <div className="text-2xl font-bold font-['Outfit'] text-white tracking-tight">{value}</div>
-        {subtitle && <p className="text-xs text-slate-400">{subtitle}</p>}
+        <div className="text-2xl font-bold font-['Outfit'] text-[#F8FAFC] tracking-tight">{value}</div>
+        {subtitle && <p className="text-xs text-[#94A3B8]">{subtitle}</p>}
       </div>
 
       {trend && (
-        <div className="flex items-center space-x-1 text-xs font-semibold text-emerald-400 pt-1">
+        <div className="flex items-center space-x-1 text-xs font-semibold text-[#10B981] pt-1">
           <span>{trend}</span>
         </div>
       )}

@@ -67,15 +67,15 @@ export default function DashboardPage() {
   return (
     <div className="space-y-8">
       {/* Top Banner */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-[#1E293B]">
         <div>
-          <h2 className="text-2xl font-bold font-['Outfit'] text-white">Revenue Recovery Dashboard</h2>
-          <p className="text-xs text-slate-400 mt-0.5">
+          <h2 className="text-2xl font-bold font-['Outfit'] text-[#F8FAFC]">Revenue Recovery Dashboard</h2>
+          <p className="text-xs text-[#94A3B8] mt-0.5">
             Real-time AI revenue risk detection, ML probability estimation, and ERV optimization engine.
           </p>
         </div>
         <div className="flex items-center space-x-2">
-          <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-bold">
+          <span className="px-3 py-1 rounded-full bg-[#10B981]/12 border border-[#10B981]/25 text-[#10B981] text-xs font-mono font-bold">
             • AI Decision Engine Active
           </span>
         </div>
@@ -117,48 +117,46 @@ export default function DashboardPage() {
       <LiveSimulationWidget onCaseUpdated={loadDashboard} />
 
       {/* PROMINENT "ORVIX VS BASELINE" COMPARISON SECTION */}
-      <div className="rounded-2xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-indigo-500/30 p-6 space-y-6 shadow-xl relative overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-indigo-500/20 pb-4">
+      <div className="rounded-2xl bg-[#171E2E] border border-[#1E293B] p-6 space-y-6 shadow-xl relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#1E293B] pb-4">
           <div>
             <div className="flex items-center space-x-2">
-              <FlaskConical className="w-5 h-5 text-indigo-400" />
-              <h3 className="text-lg font-bold font-['Outfit'] text-white">ORVIX vs Baseline Strategy Comparison</h3>
+              <FlaskConical className="w-5 h-5 text-[#60A5FA]" />
+              <h3 className="text-lg font-bold font-['Outfit'] text-[#F8FAFC]">ORVIX vs Baseline Strategy Comparison</h3>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-[#94A3B8] mt-1">
               Evaluating ORVIX AI Dynamic Strategy against traditional static naive retries on the same 1,000 event dataset.
             </p>
           </div>
-          <div className="px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-mono text-xs font-bold">
+          <div className="px-3.5 py-1.5 rounded-full bg-[#10B981]/12 border border-[#10B981]/25 text-[#10B981] font-mono text-xs font-bold">
             +₹{(incrementalRev).toLocaleString('en-IN')} Incremental Net Value
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Baseline Strategy */}
-          <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 space-y-3">
+          <div className="p-4 rounded-xl bg-[#0F172A] border border-[#1E293B] space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-slate-400">CONTROL: BASELINE STRATEGY</span>
-              <span className="text-[10px] font-mono text-amber-400 font-bold">62.2% Recovery</span>
+              <span className="text-xs font-mono font-bold text-[#64748B]">CONTROL: BASELINE STRATEGY</span>
+              <span className="text-[10px] font-mono text-[#F59E0B] font-bold">62.2% Recovery</span>
             </div>
-            <div className="text-xs font-mono text-slate-300 space-y-1">
-              <div>Flow: <span className="text-slate-400">Failed → Retry #1 → Reminder → Retry #2 → Stop</span></div>
-              <div>Revenue Recovered: <strong className="text-slate-200">₹4,44,17,833</strong></div>
-              <div>Total Interventions: <strong className="text-slate-400">2,168</strong></div>
+            <div className="text-xs font-mono text-[#94A3B8] space-y-1">
+              <div>Flow: <span className="text-[#64748B]">Failed → Retry #1 → Reminder → Retry #2 → Stop</span></div>
+              <div>Revenue Recovered: <strong className="text-[#F8FAFC]">₹4,44,17,833</strong></div>
+              <div>Total Interventions: <strong className="text-[#64748B]">2,168</strong></div>
             </div>
           </div>
 
           {/* ORVIX Dynamic AI Strategy */}
-          <div className="p-4 rounded-xl bg-indigo-950/50 border border-indigo-500/40 space-y-3">
+          <div className="p-4 rounded-xl bg-[#171E2E] border border-[#3B82F6]/30 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-mono font-bold text-indigo-300">TREATMENT: ORVIX AI ORCHESTRATOR</span>
-              <span className="text-[10px] font-mono text-emerald-400 font-bold">81.7% Recovery (+19.5%)</span>
+              <span className="text-xs font-mono font-bold text-[#60A5FA]">TREATMENT: ORVIX AI ORCHESTRATOR</span>
+              <span className="text-[10px] font-mono text-[#10B981] font-bold">81.7% Recovery (+19.5%)</span>
             </div>
-            <div className="text-xs font-mono text-indigo-100 space-y-1">
-              <div>Flow: <span className="text-indigo-300 font-semibold">Diagnose → ML Predict P(R|A) → ERV → Guardrails → Dynamic Action</span></div>
-              <div>Revenue Recovered: <strong className="text-emerald-400">₹5,77,51,383</strong></div>
-              <div>Total Interventions: <strong className="text-cyan-300">1,717 (20.8% fewer retries)</strong></div>
+            <div className="text-xs font-mono text-[#94A3B8] space-y-1">
+              <div>Flow: <span className="text-[#60A5FA] font-semibold">Diagnose → ML Predict P(R|A) → ERV → Guardrails → Dynamic Action</span></div>
+              <div>Revenue Recovered: <strong className="text-[#10B981]">₹5,77,51,383</strong></div>
+              <div>Total Interventions: <strong className="text-[#60A5FA]">1,717 (20.8% fewer retries)</strong></div>
             </div>
           </div>
         </div>
@@ -166,7 +164,7 @@ export default function DashboardPage() {
         {/* Action Distribution Lift Bar Chart */}
         {expData?.comparisonChart && (
           <div className="pt-2">
-            <h4 className="text-xs font-bold text-slate-300 mb-2 font-mono">Incremental Lift & Metric Comparison</h4>
+            <h4 className="text-xs font-bold text-[#94A3B8] mb-2 font-mono">Incremental Lift & Metric Comparison</h4>
             <RecoveryChart
               type="bar"
               data={expData.comparisonChart}
@@ -213,10 +211,10 @@ export default function DashboardPage() {
       {/* Analytics Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Chart 1: Revenue Recovery Trend */}
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+        <div className="p-5 rounded-xl bg-[#171E2E] border border-[#1E293B] space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-bold text-slate-200 text-sm">1. Revenue Recovery Trend (₹)</h4>
-            <span className="text-[11px] text-slate-500 font-mono">Rolling Timeline</span>
+            <h4 className="font-bold text-[#F8FAFC] text-sm">1. Revenue Recovery Trend (₹)</h4>
+            <span className="text-[11px] text-[#64748B] font-mono">Rolling Timeline</span>
           </div>
           <RecoveryChart
             type="area"
@@ -228,10 +226,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Chart 2: Recovery by Selected Action */}
-        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 space-y-4">
+        <div className="p-5 rounded-xl bg-[#171E2E] border border-[#1E293B] space-y-4">
           <div className="flex items-center justify-between">
-            <h4 className="font-bold text-slate-200 text-sm">2. Recovery by Dynamic Action</h4>
-            <span className="text-[11px] text-emerald-400 font-mono font-semibold">₹ Revenue Recovered</span>
+            <h4 className="font-bold text-[#F8FAFC] text-sm">2. Recovery by Dynamic Action</h4>
+            <span className="text-[11px] text-[#10B981] font-mono font-semibold">₹ Revenue Recovered</span>
           </div>
           <RecoveryChart
             type="bar"

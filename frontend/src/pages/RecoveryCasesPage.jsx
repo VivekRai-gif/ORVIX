@@ -97,8 +97,8 @@ export default function RecoveryCasesPage() {
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold font-['Outfit'] text-white">Recovery Cases</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-2xl font-bold font-['Outfit'] text-[#F8FAFC]">Recovery Cases</h2>
+          <p className="text-xs text-[#94A3B8]">
             Query and manage revenue recovery cases across failure modes and intervention statuses.
           </p>
         </div>
@@ -110,7 +110,7 @@ export default function RecoveryCasesPage() {
             setNewCustomerId(`cust_man_${rnd}`);
             setShowModal(true);
           }}
-          className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold shadow-lg shadow-indigo-600/20 transition-colors"
+          className="inline-flex items-center space-x-2 px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#3B82F6] text-[#F8FAFC] text-xs font-semibold shadow-lg shadow-[#2563EB]/20 transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span>Ingest New Case</span>
@@ -118,66 +118,66 @@ export default function RecoveryCasesPage() {
       </div>
 
       {/* Filter Bar */}
-      <form onSubmit={handleFilterSubmit} className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-3">
+      <form onSubmit={handleFilterSubmit} className="p-4 rounded-xl bg-[#171E2E] border border-[#1E293B] space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 text-xs">
           {/* Search Input */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-2.5" />
+            <Search className="w-3.5 h-3.5 text-[#64748B] absolute left-3 top-2.5" />
             <input
               type="text"
               placeholder="Search case, customer..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-1.5 text-slate-200 focus:outline-none focus:border-indigo-500"
+              className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg pl-9 pr-3 py-1.5 text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
             />
           </div>
 
           {/* Status Filter */}
-          <div className="flex items-center space-x-1.5 bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
-            <Filter className="w-3.5 h-3.5 text-slate-500" />
+          <div className="flex items-center space-x-1.5 bg-[#0F172A] border border-[#1E293B] rounded-lg px-2.5 py-1.5">
+            <Filter className="w-3.5 h-3.5 text-[#64748B]" />
             <select
               value={statusFilter}
               onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-              className="w-full bg-transparent text-slate-200 focus:outline-none capitalize"
+              className="w-full bg-transparent text-[#F8FAFC] focus:outline-none capitalize"
             >
-              <option value="all" className="bg-slate-900">All Statuses</option>
-              <option value="AT_RISK" className="bg-slate-900">AT_RISK</option>
-              <option value="open" className="bg-slate-900">Open</option>
-              <option value="in_progress" className="bg-slate-900">In Progress</option>
-              <option value="recovered" className="bg-slate-900">Recovered</option>
-              <option value="failed" className="bg-slate-900">Failed</option>
-              <option value="closed" className="bg-slate-900">Closed</option>
-              <option value="escalated" className="bg-slate-900">Escalated</option>
+              <option value="all" className="bg-[#111827]">All Statuses</option>
+              <option value="AT_RISK" className="bg-[#111827]">AT_RISK</option>
+              <option value="open" className="bg-[#111827]">Open</option>
+              <option value="in_progress" className="bg-[#111827]">In Progress</option>
+              <option value="recovered" className="bg-[#111827]">Recovered</option>
+              <option value="failed" className="bg-[#111827]">Failed</option>
+              <option value="closed" className="bg-[#111827]">Closed</option>
+              <option value="escalated" className="bg-[#111827]">Escalated</option>
             </select>
           </div>
 
           {/* Failure Reason Filter */}
-          <div className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-lg px-2.5 py-1.5">
             <select
               value={reasonFilter}
               onChange={(e) => { setReasonFilter(e.target.value); setPage(1); }}
-              className="w-full bg-transparent text-slate-200 focus:outline-none"
+              className="w-full bg-transparent text-[#F8FAFC] focus:outline-none"
             >
-              <option value="all" className="bg-slate-900">All Failure Reasons</option>
-              <option value="INSUFFICIENT_FUNDS" className="bg-slate-900">INSUFFICIENT_FUNDS</option>
-              <option value="NETWORK_ERROR" className="bg-slate-900">NETWORK_ERROR</option>
-              <option value="BANK_DECLINED" className="bg-slate-900">BANK_DECLINED</option>
-              <option value="TIMEOUT" className="bg-slate-900">TIMEOUT</option>
-              <option value="EXPIRED_CARD" className="bg-slate-900">EXPIRED_CARD</option>
+              <option value="all" className="bg-[#111827]">All Failure Reasons</option>
+              <option value="INSUFFICIENT_FUNDS" className="bg-[#111827]">INSUFFICIENT_FUNDS</option>
+              <option value="NETWORK_ERROR" className="bg-[#111827]">NETWORK_ERROR</option>
+              <option value="BANK_DECLINED" className="bg-[#111827]">BANK_DECLINED</option>
+              <option value="TIMEOUT" className="bg-[#111827]">TIMEOUT</option>
+              <option value="EXPIRED_CARD" className="bg-[#111827]">EXPIRED_CARD</option>
             </select>
           </div>
 
           {/* Action Filter */}
-          <div className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-1.5">
+          <div className="bg-[#0F172A] border border-[#1E293B] rounded-lg px-2.5 py-1.5">
             <select
               value={actionFilter}
               onChange={(e) => { setActionFilter(e.target.value); setPage(1); }}
-              className="w-full bg-transparent text-slate-200 focus:outline-none"
+              className="w-full bg-transparent text-[#F8FAFC] focus:outline-none"
             >
-              <option value="all" className="bg-slate-900">All Selected Actions</option>
-              <option value="intelligent_retry" className="bg-slate-900">Intelligent Retry</option>
-              <option value="payment_link" className="bg-slate-900">Payment Link</option>
-              <option value="email_reminder" className="bg-slate-900">Email Reminder</option>
+              <option value="all" className="bg-[#111827]">All Selected Actions</option>
+              <option value="intelligent_retry" className="bg-[#111827]">Intelligent Retry</option>
+              <option value="payment_link" className="bg-[#111827]">Payment Link</option>
+              <option value="email_reminder" className="bg-[#111827]">Email Reminder</option>
             </select>
           </div>
 
@@ -188,14 +188,14 @@ export default function RecoveryCasesPage() {
               placeholder="Min ₹"
               value={minAmount}
               onChange={(e) => setMinAmount(e.target.value)}
-              className="w-1/2 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 focus:outline-none"
+              className="w-1/2 bg-[#0F172A] border border-[#1E293B] rounded-lg px-2 py-1.5 text-[#F8FAFC] focus:outline-none"
             />
             <input
               type="number"
               placeholder="Max ₹"
               value={maxAmount}
               onChange={(e) => setMaxAmount(e.target.value)}
-              className="w-1/2 bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-slate-200 focus:outline-none"
+              className="w-1/2 bg-[#0F172A] border border-[#1E293B] rounded-lg px-2 py-1.5 text-[#F8FAFC] focus:outline-none"
             />
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function RecoveryCasesPage() {
         <div className="flex justify-end pt-1">
           <button
             type="submit"
-            className="px-4 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium transition-colors"
+            className="px-4 py-1.5 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-[#94A3B8] text-xs font-medium transition-colors"
           >
             Apply Filters
           </button>
@@ -222,22 +222,22 @@ export default function RecoveryCasesPage() {
           <RecoveryTable cases={cases} />
 
           {/* Pagination */}
-          <div className="flex items-center justify-between text-xs text-slate-400 px-2 py-2">
+          <div className="flex items-center justify-between text-xs text-[#64748B] px-2 py-2">
             <span>Showing page {page} of {pages} ({total} total cases)</span>
             <div className="flex items-center space-x-2">
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(p => Math.max(1, p - 1))}
-                className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 transition-colors"
+                className="p-2 rounded-lg bg-[#171E2E] border border-[#1E293B] hover:bg-[#1E293B] disabled:opacity-40 transition-colors"
               >
-                <ChevronLeft className="w-4 h-4 text-slate-300" />
+                <ChevronLeft className="w-4 h-4 text-[#94A3B8]" />
               </button>
               <button
                 disabled={page >= pages}
                 onClick={() => setPage(p => Math.min(pages, p + 1))}
-                className="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:bg-slate-800 disabled:opacity-40 transition-colors"
+                className="p-2 rounded-lg bg-[#171E2E] border border-[#1E293B] hover:bg-[#1E293B] disabled:opacity-40 transition-colors"
               >
-                <ChevronRight className="w-4 h-4 text-slate-300" />
+                <ChevronRight className="w-4 h-4 text-[#94A3B8]" />
               </button>
             </div>
           </div>
@@ -246,55 +246,55 @@ export default function RecoveryCasesPage() {
 
       {/* Ingest Case Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md p-6 space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <h3 className="text-base font-bold text-white">Ingest New Recovery Case</h3>
-              <button onClick={() => setShowModal(false)} className="text-slate-400 hover:text-white">
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#111827] border border-[#1E293B] rounded-2xl w-full max-w-md p-6 space-y-5">
+            <div className="flex items-center justify-between border-b border-[#1E293B] pb-3">
+              <h3 className="text-base font-bold text-[#F8FAFC]">Ingest New Recovery Case</h3>
+              <button onClick={() => setShowModal(false)} className="text-[#64748B] hover:text-[#F8FAFC]">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleCreateSubmit} className="space-y-4 text-xs">
               <div className="space-y-1.5">
-                <label className="text-slate-300 font-semibold">Payment ID</label>
+                <label className="text-[#94A3B8] font-semibold">Payment ID</label>
                 <input
                   type="text"
                   value={newPaymentId}
                   onChange={(e) => setNewPaymentId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-3 py-2 text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-slate-300 font-semibold">Customer ID</label>
+                <label className="text-[#94A3B8] font-semibold">Customer ID</label>
                 <input
                   type="text"
                   value={newCustomerId}
                   onChange={(e) => setNewCustomerId(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-3 py-2 text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-slate-300 font-semibold">Transaction Amount (₹)</label>
+                <label className="text-[#94A3B8] font-semibold">Transaction Amount (₹)</label>
                 <input
                   type="number"
                   value={newAmount}
                   onChange={(e) => setNewAmount(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-indigo-500"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-3 py-2 text-[#F8FAFC] focus:outline-none focus:border-[#3B82F6]"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-slate-300 font-semibold">Failure Reason</label>
+                <label className="text-[#94A3B8] font-semibold">Failure Reason</label>
                 <select
                   value={newReason}
                   onChange={(e) => setNewReason(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 focus:outline-none"
+                  className="w-full bg-[#0F172A] border border-[#1E293B] rounded-lg px-3 py-2 text-[#F8FAFC] focus:outline-none"
                 >
                   <option value="INSUFFICIENT_FUNDS">INSUFFICIENT_FUNDS</option>
                   <option value="NETWORK_ERROR">NETWORK_ERROR</option>
@@ -304,18 +304,18 @@ export default function RecoveryCasesPage() {
                 </select>
               </div>
 
-              <div className="pt-3 border-t border-slate-800 flex justify-end space-x-2">
+              <div className="pt-3 border-t border-[#1E293B] flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="px-4 py-2 rounded-lg bg-[#1E293B] hover:bg-[#334155] text-[#94A3B8]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+                  className="px-4 py-2 rounded-lg bg-[#2563EB] hover:bg-[#3B82F6] text-[#F8FAFC] font-semibold shadow-lg shadow-[#2563EB]/20 disabled:opacity-50 transition-colors"
                 >
                   {creating ? 'Ingesting...' : 'Create Case (POST /api/recovery/cases)'}
                 </button>
