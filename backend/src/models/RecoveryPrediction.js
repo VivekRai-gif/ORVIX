@@ -28,6 +28,18 @@ const recoveryPredictionSchema = new mongoose.Schema(
       type: String,
       default: '1.0.0'
     },
+    reason: {
+      type: String,
+      default: null
+    },
+    assignedTo: {
+      type: String,
+      default: null
+    },
+    assigneeWhy: {
+      type: String,
+      default: null
+    },
     createdAt: {
       type: Date,
       default: Date.now,

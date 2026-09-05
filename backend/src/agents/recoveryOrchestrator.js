@@ -4,118 +4,40 @@ import { Customer } from '../models/Customer.js';
 import { Payment } from '../models/Payment.js';
 import { Policy } from '../models/Policy.js';
 import { AuditLog } from '../models/AuditLog.js';
+import { RecoveryPrediction } from '../models/RecoveryPrediction.js';
 import { diagnoseFailureReason } from '../services/diagnosisService.js';
 import { calculateExpectedRecoveryValues } from '../services/expectedValueService.js';
 import { evaluatePolicyRule, DEFAULT_POLICY } from '../services/policyEngineService.js';
 import { executeTool } from '../tools/index.js';
 import { generateExplanation } from '../services/explanationService.js';
+import { evaluateWithGeminiAI } from '../services/geminiService.js';
 
 /**
- * Fetch recovery probability for candidate actions from ML Service or fallback engine.
+ * Fetch recovery probability and assignees for candidate actions via Google Gemini AI.
  */
 export async function fetchActionProbabilities(caseData, customerData, diagnosis, overrideProbs = null) {
   if (overrideProbs) {
     return overrideProbs;
   }
-  if (process.env.SKIP_ML_FETCH === 'true') {
-    return getHeuristicProbabilities(caseData.failureReason, diagnosis, customerData);
-  }
 
-  try {
-    const mlUrl = process.env.ML_SERVICE_URL || 'http://localhost:8000';
-    const response = await fetch(`${mlUrl}/predict-all`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      signal: AbortSignal.timeout(500),
-      body: JSON.stringify({
-        amount: caseData.amount,
-        failure_reason: caseData.failureReason || 'UNKNOWN',
-        payment_method: caseData.paymentMethod || 'card',
-        customer_segment: customerData.segment || 'RETURNING',
-        previous_successful_payments: customerData.previousSuccessfulPayments || 0,
-        previous_failed_payments: customerData.previousFailedPayments || 0,
-        historical_recovery_rate: customerData.historicalRecoveryRate || 0.5,
-        attempt_count: caseData.attemptCount || 0,
-        contact_count: caseData.contactCount || 0,
-        time_since_failure: 1.0
-      })
+  const geminiEval = await evaluateWithGeminiAI({
+    amount: caseData.amount,
+    failureReason: caseData.failureReason || 'INSUFFICIENT_FUNDS',
+    paymentMethod: caseData.paymentMethod || 'card',
+    customerContext: customerData
+  });
+
+  const probMap = {};
+  if (geminiEval.actions) {
+    Object.entries(geminiEval.actions).forEach(([act, details]) => {
+      probMap[act.toUpperCase()] = details.probability;
     });
-
-    if (response.ok) {
-      const data = await response.json();
-      const probMap = {};
-      if (data.rankings && Array.isArray(data.rankings)) {
-        data.rankings.forEach(item => {
-          probMap[item.action.toUpperCase()] = item.probability;
-        });
-        return probMap;
-      }
-    }
-  } catch (err) {
-    // Offline / unavailable ML service fallback
   }
-
-  return getHeuristicProbabilities(caseData.failureReason, diagnosis, customerData);
-}
-
-function getHeuristicProbabilities(failureReason, diagnosis, customerData) {
-  const reason = (failureReason || '').toUpperCase();
-  const baseRate = customerData?.historicalRecoveryRate ?? 0.60;
-
-  if (diagnosis?.category === 'HARD_FAILURE' || diagnosis?.recoverable === false) {
-    return { RETRY: 0.0, PAYMENT_LINK: 0.0, EMAIL: 0.0, HUMAN_ESCALATION: 0.0 };
-  }
-
-  if (reason.includes('INSUFFICIENT_FUNDS') || reason.includes('LOW_BALANCE')) {
-    return {
-      RETRY: Math.min(0.85, baseRate + 0.15),
-      PAYMENT_LINK: 0.55,
-      EMAIL: 0.40,
-      HUMAN_ESCALATION: 0.70
-    };
-  }
-
-  if (reason.includes('TIMEOUT') || reason.includes('NETWORK') || reason.includes('GATEWAY')) {
-    return {
-      RETRY: Math.min(0.92, baseRate + 0.25),
-      PAYMENT_LINK: 0.35,
-      EMAIL: 0.25,
-      HUMAN_ESCALATION: 0.50
-    };
-  }
-
-  if (reason.includes('EXPIRED') || reason.includes('DROPOFF')) {
-    return {
-      RETRY: 0.10,
-      PAYMENT_LINK: Math.min(0.85, baseRate + 0.20),
-      EMAIL: 0.65,
-      HUMAN_ESCALATION: 0.80
-    };
-  }
-
-  return {
-    RETRY: 0.50,
-    PAYMENT_LINK: 0.50,
-    EMAIL: 0.40,
-    HUMAN_ESCALATION: 0.60
-  };
+  return probMap;
 }
 
 /**
- * ORVIX Recovery Orchestrator Flow
- * 
- * 1. Load RecoveryCase
- * 2. Load Customer
- * 3. Load Payment
- * 4. Run Diagnosis Engine
- * 5. Get recovery probability for every candidate action
- * 6. Calculate Expected Recovery Value for every candidate action
- * 7. Sort candidate actions by ERV
- * 8. Send the best action to Policy Engine
- * 9. If approved: execute action (via controlled backend tools)
- * 10. If rejected: try the next eligible action
- * 11. Record every decision in AuditLog
- * 12. Return complete decision object
+ * ORVIX Recovery Orchestrator Flow powered by Google Gemini AI
  */
 export async function runOrchestrator(caseId, options = {}) {
   const {
@@ -157,7 +79,7 @@ export async function runOrchestrator(caseId, options = {}) {
     }
   }
 
-  // 2. Load Customer
+  // 2. Load Customer Context Profile
   let customer = dbOverridingCustomer;
   if (!customer && isDbReady && typeof Customer?.findOne === 'function') {
     try {
@@ -187,22 +109,43 @@ export async function runOrchestrator(caseId, options = {}) {
   const failureReason = rCase.failureReason || payment.failureReason || 'UNKNOWN';
   const diagnosis = diagnoseFailureReason(failureReason);
 
-  // 5. Get recovery probability for candidate actions
-  const probMap = await fetchActionProbabilities(rCase, customer, diagnosis, probabilitiesOverride);
+  // 5. Evaluate Candidate Actions using Google Gemini AI Engine
+  const geminiEval = await evaluateWithGeminiAI({
+    amount: rCase.amount,
+    failureReason,
+    paymentMethod: rCase.paymentMethod || payment.paymentMethod || 'card',
+    customerContext: customer
+  });
 
-  // 6. Calculate Expected Recovery Value for every candidate action
+  // Extract probability map from Gemini evaluation
+  const probMap = {};
+  if (probabilitiesOverride) {
+    Object.assign(probMap, probabilitiesOverride);
+  } else if (geminiEval.actions) {
+    Object.entries(geminiEval.actions).forEach(([act, details]) => {
+      probMap[act.toUpperCase()] = details.probability;
+    });
+  }
+
+  // 6. Calculate Expected Recovery Value (ERV)
   const ervResults = calculateExpectedRecoveryValues({
     amount: rCase.amount,
     probabilities: probMap,
     customCosts
   });
 
-  // 7. Candidate actions are sorted by ERV descending
-  const actionsSummary = ervResults.map(item => ({
-    action: item.action,
-    probability: item.probability,
-    expectedValue: item.expectedRecoveryValue
-  }));
+  // 7. Enrich candidate actions summary with Gemini reasoning, assignedTo, and assigneeWhy
+  const actionsSummary = ervResults.map(item => {
+    const actDetails = geminiEval.actions?.[item.action] || {};
+    return {
+      action: item.action,
+      probability: item.probability,
+      expectedValue: item.expectedRecoveryValue,
+      reason: actDetails.reason || `Gemini AI probability prediction ${Math.round(item.probability * 100)}% based on failure code '${failureReason}'`,
+      assignedTo: actDetails.assignedTo || 'Automated Recovery Dispatcher',
+      assigneeWhy: actDetails.assigneeWhy || 'Assigned by Gemini AI Engine based on transaction value & customer context profile'
+    };
+  });
 
   // 8. Load Policy
   let merchantPolicy = dbOverridingPolicy;
@@ -253,6 +196,27 @@ export async function runOrchestrator(caseId, options = {}) {
     }
     try {
       await rCase.save();
+    } catch (e) {
+      // Ignore DB save errors in test mocks
+    }
+  }
+
+  // Persist RecoveryPredictions to database if ready
+  if (isDbReady && typeof RecoveryPrediction?.deleteMany === 'function') {
+    try {
+      await RecoveryPrediction.deleteMany({ caseId });
+      await RecoveryPrediction.insertMany(
+        actionsSummary.map(a => ({
+          caseId,
+          action: a.action,
+          probability: a.probability,
+          expectedValue: a.expectedValue,
+          reason: a.reason,
+          assignedTo: a.assignedTo,
+          assigneeWhy: a.assigneeWhy,
+          modelVersion: '1.0.0'
+        }))
+      );
     } catch (e) {
       // Ignore DB save errors in test mocks
     }

@@ -5,6 +5,7 @@ import RecoveryPrediction from './RecoveryPrediction.js';
 import ActionExecution from './ActionExecution.js';
 import AuditLog from './AuditLog.js';
 import Policy from './Policy.js';
+import User from './User.js';
 
 export {
   Customer,
@@ -13,5 +14,7 @@ export {
   RecoveryPrediction,
   ActionExecution,
   AuditLog,
-  Policy
+  Policy,
+  User
 };
+

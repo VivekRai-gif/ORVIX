@@ -9,6 +9,44 @@ const api = axios.create({
   }
 });
 
+// Attach Authorization Bearer token if present in localStorage
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('orvix_token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Auth API Calls
+export const loginUser = async (credentials) => {
+  const response = await api.post('/auth/login', credentials);
+  if (response.data?.token) {
+    localStorage.setItem('orvix_token', response.data.token);
+    localStorage.setItem('orvix_user', JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
+export const registerUser = async (userData) => {
+  const response = await api.post('/auth/register', userData);
+  if (response.data?.token) {
+    localStorage.setItem('orvix_token', response.data.token);
+    localStorage.setItem('orvix_user', JSON.stringify(response.data.user));
+  }
+  return response.data;
+};
+
+export const getCurrentUser = async () => {
+  const response = await api.get('/auth/me');
+  return response.data;
+};
+
+export const logoutUser = () => {
+  localStorage.removeItem('orvix_token');
+  localStorage.removeItem('orvix_user');
+};
+
 // System Health
 export const checkBackendHealth = async () => {
   try {
@@ -74,6 +112,17 @@ export const escalateRecoveryCase = async (id, escalateData = {}) => {
 // Legacy fallback helper alias
 export const fetchCases = fetchRecoveryCases;
 export const fetchCaseById = fetchRecoveryCaseById;
+
+// Customer Recovery Intelligence
+export const fetchCustomers = async (params = {}) => {
+  const response = await api.get('/customers', { params });
+  return response.data;
+};
+
+export const fetchCustomerById = async (id) => {
+  const response = await api.get(`/customers/${id}`);
+  return response.data;
+};
 
 // Policy
 export const fetchPolicy = async () => {

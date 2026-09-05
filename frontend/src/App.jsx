@@ -1,68 +1,52 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
-import Header from './components/Header';
-import Sidebar from './components/Sidebar';
+import AppShell from './components/layout/AppShell';
 import HomePage from './pages/HomePage';
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
+import CustomerRecoveryPage from './pages/CustomerRecoveryPage';
+
+// Redesigned Pages
 import DashboardPage from './pages/DashboardPage';
 import RecoveryCasesPage from './pages/RecoveryCasesPage';
 import CaseDetailsPage from './pages/CaseDetailsPage';
+import CustomersPage from './pages/CustomersPage';
+import PerformancePage from './pages/PerformancePage';
 import ExperimentsPage from './pages/ExperimentsPage';
 import PoliciesPage from './pages/PoliciesPage';
 import AuditLogsPage from './pages/AuditLogsPage';
-import { checkBackendHealth, checkMlServiceHealth } from './services/api';
+import SystemHealthPage from './pages/SystemHealthPage';
 
-function DashboardLayout({ backendHealth, mlHealth }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-
+function ApplicationLayout() {
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-[#F8FAFC] flex flex-col font-['Inter',sans-serif]">
-      <Header
-        backendHealth={backendHealth}
-        mlHealth={mlHealth}
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen(prev => !prev)}
-      />
-      <div className="flex flex-1 relative">
-        <Sidebar
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-        <main className="flex-1 max-w-7xl w-full mx-auto px-6 py-8 transition-all">
-          <Outlet />
-        </main>
-      </div>
-    </div>
+    <AppShell>
+      <Outlet />
+    </AppShell>
   );
 }
 
 export default function App() {
-  const [backendHealth, setBackendHealth] = useState(null);
-  const [mlHealth, setMlHealth] = useState(null);
-
-  useEffect(() => {
-    const checkAllHealth = async () => {
-      const be = await checkBackendHealth();
-      const ml = await checkMlServiceHealth();
-      setBackendHealth(be);
-      setMlHealth(ml);
-    };
-    checkAllHealth();
-  }, []);
-
   return (
     <Router>
       <Routes>
-        {/* Public Home / Landing Page */}
-        <Route path="/" element={<HomePage />} />
+        {/* Public Landing & Auth & Hosted Customer Recovery Portal Pages */}
+        <Route path="/landing" element={<HomePage />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/signup" element={<SignupPage />} />
+        <Route path="/pay/:id" element={<CustomerRecoveryPage />} />
 
-        {/* Application Dashboard Routes */}
-        <Route element={<DashboardLayout backendHealth={backendHealth} mlHealth={mlHealth} />}>
+        {/* Unified Application Workspace Shell */}
+        <Route element={<ApplicationLayout />}>
+          <Route path="/" element={<DashboardPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/cases" element={<RecoveryCasesPage />} />
           <Route path="/cases/:id" element={<CaseDetailsPage />} />
+          <Route path="/customers" element={<CustomersPage />} />
+          <Route path="/performance" element={<PerformancePage />} />
           <Route path="/experiments" element={<ExperimentsPage />} />
           <Route path="/policies" element={<PoliciesPage />} />
           <Route path="/audit-logs" element={<AuditLogsPage />} />
+          <Route path="/system-health" element={<SystemHealthPage />} />
         </Route>
       </Routes>
     </Router>

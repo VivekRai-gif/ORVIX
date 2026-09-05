@@ -11,9 +11,11 @@
     "test": "node tests/diagnosisService.test.js && node tests/expectedValueService.test.js && node tests/recoveryOrchestrator.test.js && node tests/recoveryPolicy.test.js && node tests/tools.test.js && node tests/outcomeService.test.js && node tests/razorpay.test.js && node tests/explanationService.test.js && node tests/qaComprehensive.test.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
     "mongoose": "^8.10.0"
   },
   "devDependencies": {

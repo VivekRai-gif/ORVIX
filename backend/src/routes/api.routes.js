@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { getHealth } from '../controllers/health.controller.js';
+import { register, login, getMe } from '../controllers/auth.controller.js';
 import { getDashboardStats } from '../controllers/dashboard.controller.js';
 import { getCases, getCaseById } from '../controllers/cases.controller.js';
 import {
@@ -10,12 +11,16 @@ import {
   executeRecoveryAction,
   stopRecoveryCase,
   escalateRecoveryCase,
-  recordActionOutcomeController
+  recordActionOutcomeController,
+  getPublicRecoveryCase,
+  payPublicRecoveryCase
 } from '../controllers/recovery.controller.js';
 
 import { getPolicy, updatePolicy } from '../controllers/policies.controller.js';
 import { getAuditLogs } from '../controllers/audit.controller.js';
 import { getExperimentStats } from '../controllers/experiments.controller.js';
+import { getCustomers, getCustomerById } from '../controllers/customers.controller.js';
+import { protect } from '../middleware/auth.js';
 
 import diagnosisRoutes from './diagnosis.routes.js';
 
@@ -24,12 +29,25 @@ const router = Router();
 // Health Check
 router.get('/health', getHealth);
 
+// Auth Routes
+router.post('/auth/register', register);
+router.post('/auth/login', login);
+router.get('/auth/me', protect, getMe);
+
+// Public Customer Recovery Checkout Portal APIs
+router.get('/public/recovery/:id', getPublicRecoveryCase);
+router.post('/public/recovery/:id/pay', payPublicRecoveryCase);
+
 // Dashboard APIs
 router.get('/dashboard/stats', getDashboardStats);
 
 // Legacy Cases Compatibility APIs
 router.get('/cases', getCases);
 router.get('/cases/:id', getCaseById);
+
+// Customer Recovery Intelligence APIs
+router.get('/customers', getCustomers);
+router.get('/customers/:id', getCustomerById);
 
 // Specific Recovery Case REST APIs
 router.post('/recovery/cases', createRecoveryCase);

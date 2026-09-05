@@ -12,6 +12,7 @@ import ActionBadge from '../components/ActionBadge';
 import DecisionTimeline from '../components/DecisionTimeline';
 import LoadingState from '../components/LoadingState';
 import ErrorState from '../components/ErrorState';
+import CelebrationPopup from '../components/CelebrationPopup';
 import {
   ArrowLeft,
   User,
@@ -36,6 +37,7 @@ export default function CaseDetailsPage() {
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
   const [msg, setMsg] = useState(null);
+  const [showCelebration, setShowCelebration] = useState(false);
 
   const loadDetails = async () => {
     setLoading(true);
@@ -72,6 +74,7 @@ export default function CaseDetailsPage() {
     try {
       const res = await executeRecoveryCase(id, { action: data?.case?.selectedAction || 'RETRY' });
       setMsg(`Action executed successfully! Outcome status updated to '${res.case?.status}'.`);
+      setShowCelebration(true); // 🎉 Trigger Party Popper Confetti + Balloons Celebration Popup!
       await loadDetails();
     } catch (err) {
       alert('Failed to execute action: ' + err.message);
@@ -117,6 +120,15 @@ export default function CaseDetailsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Celebration Popup (Confetti Party Popper + Floating Balloons) */}
+      <CelebrationPopup
+        isOpen={showCelebration}
+        onClose={() => setShowCelebration(false)}
+        amount={amount}
+        action={rCase.selectedAction || 'RETRY'}
+        caseId={rCase.caseId}
+      />
+
       {/* Top Navigation & Action Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <Link to="/cases" className="inline-flex items-center space-x-2 text-xs font-semibold text-[#94A3B8] hover:text-[#60A5FA] transition-colors">
@@ -275,8 +287,8 @@ export default function CaseDetailsPage() {
           <div className="rounded-xl bg-[#171E2E] border border-[#1E293B] p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2 text-[#F8FAFC] font-bold text-sm">
-                <Cpu className="w-4 h-4 text-[#60A5FA]" />
-                <span>AI Recovery Probabilities & ERV Engine</span>
+                <Cpu className="w-4 h-4 text-[#8B5CF6]" />
+                <span>Google Gemini AI Action Evaluation & Handler Assignments</span>
               </div>
               <span className="text-[11px] font-mono text-[#10B981]">Formula: ERV = P(R|A) × Amount − Cost</span>
             </div>
@@ -287,8 +299,9 @@ export default function CaseDetailsPage() {
                   <thead>
                     <tr className="border-b border-[#1E293B] text-[#64748B] uppercase font-semibold">
                       <th className="py-2.5 px-3">Candidate Action</th>
+                      <th className="py-2.5 px-3">Assigned Handler</th>
                       <th className="py-2.5 px-3 text-center">Probability P(R|A)</th>
-                      <th className="py-2.5 px-3 text-right">Expected Value ERV(A)</th>
+                      <th className="py-2.5 px-3 text-right">Expected Value (ERV)</th>
                       <th className="py-2.5 px-3 text-right">Action</th>
                     </tr>
                   </thead>
@@ -296,22 +309,35 @@ export default function CaseDetailsPage() {
                     {predictions.map((p, idx) => (
                       <tr key={idx} className={rCase.selectedAction === p.action ? 'bg-[#3B82F6]/10 border-l-2 border-[#3B82F6]' : ''}>
                         <td className="py-3 px-3">
-                          <div className="flex items-center space-x-2">
-                            <span className="text-[#64748B] font-bold text-[10px]">#{idx + 1}</span>
-                            <ActionBadge action={p.action} />
+                          <div className="space-y-1">
+                            <div className="flex items-center space-x-2">
+                              <span className="text-[#64748B] font-bold text-[10px]">#{idx + 1}</span>
+                              <ActionBadge action={p.action} />
+                            </div>
+                            {p.reason && (
+                              <p className="text-[11px] text-[#94A3B8] font-sans leading-tight mt-1">
+                                {p.reason}
+                              </p>
+                            )}
                           </div>
                         </td>
-                        <td className="py-3 px-3 text-center text-[#60A5FA] font-bold">
+                        <td className="py-3 px-3">
+                          <div className="space-y-0.5">
+                            <span className="text-[#8B5CF6] font-bold block">{p.assignedTo || 'Automated Tool Dispatcher'}</span>
+                            <span className="text-[10px] text-[#71717A] font-sans block">{p.assigneeWhy || 'Assigned by Gemini AI based on context'}</span>
+                          </div>
+                        </td>
+                        <td className="py-3 px-3 text-center text-[#60A5FA] font-bold text-sm">
                           {((p.probability || 0) * 100).toFixed(0)}%
                         </td>
-                        <td className="py-3 px-3 text-right font-bold text-[#10B981]">
+                        <td className="py-3 px-3 text-right font-bold text-[#10B981] text-sm">
                           ₹{p.expectedValue?.toLocaleString('en-IN')}
                         </td>
                         <td className="py-3 px-3 text-right">
                           <button
                             onClick={() => handleDecide(p.action)}
                             disabled={actionLoading || rCase.selectedAction === p.action}
-                            className="px-2.5 py-1 rounded bg-[#1E293B] hover:bg-[#334155] text-[11px] font-sans text-[#60A5FA] disabled:opacity-40 transition-colors"
+                            className="px-3 py-1.5 rounded bg-[#2563EB] hover:bg-[#3B82F6] text-white text-[11px] font-sans font-semibold disabled:opacity-40 transition-colors"
                           >
                             {rCase.selectedAction === p.action ? 'Selected' : 'Select'}
                           </button>

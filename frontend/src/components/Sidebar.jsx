@@ -56,6 +56,9 @@ export default function Sidebar({ isOpen = true, onClose }) {
       </div>
 
       <div className="p-3.5 rounded-xl bg-[#171E2E] border border-[#1E293B] space-y-2 text-xs">
+        <div className="p-2 rounded-xl bg-[#090C14] border border-[#1E293B] mb-2 flex justify-center shadow-inner">
+          <img src="/logo.png" alt="ORVIX" className="h-9 w-auto object-contain" />
+        </div>
         <div className="flex items-center space-x-2 text-[#60A5FA] font-semibold">
           <Activity className="w-4 h-4" />
           <span>Decision Engine v1.0</span>

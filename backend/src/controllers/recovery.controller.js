@@ -180,16 +180,22 @@ export const getRecoveryCaseById = async (req, res, next) => {
       return res.status(503).json({ success: false, error: 'Database disconnected.' });
     }
 
-    const rCase = await RecoveryCase.findOne({ caseId: id });
+    let rCase = await RecoveryCase.findOne({ caseId: id });
     if (!rCase) {
       return res.status(404).json({ success: false, error: `Recovery case '${id}' not found.` });
     }
 
     const customer = await Customer.findOne({ customerId: rCase.customerId });
     const payment = await Payment.findOne({ paymentId: rCase.paymentId });
-    const predictions = await RecoveryPrediction.find({ caseId: id }).sort({ expectedValue: -1 });
     const actions = await ActionExecution.find({ caseId: id }).sort({ executedAt: -1 });
     const auditLogs = await AuditLog.find({ caseId: id }).sort({ timestamp: -1 });
+
+    // Evaluate AI Decision Engine to generate candidate action predictions, ERVs, handlers, and explanation
+    const decision = await runOrchestrator(id);
+
+    // Re-fetch updated case
+    rCase = (await RecoveryCase.findOne({ caseId: id })) || rCase;
+    const predictions = decision.actions || (await RecoveryPrediction.find({ caseId: id }).sort({ expectedValue: -1 }));
 
     return res.status(200).json({
       success: true,
@@ -198,7 +204,8 @@ export const getRecoveryCaseById = async (req, res, next) => {
       payment,
       predictions,
       actions,
-      auditLogs
+      auditLogs,
+      explanation: decision.explanation
     });
   } catch (error) {
     next(error);
@@ -366,27 +373,112 @@ export const escalateRecoveryCase = async (req, res, next) => {
 };
 
 /**
- * POST /api/recovery/cases/:id/outcome
- * Record outcome of a recovery action (RECOVERED, FAILED, PENDING, STOPPED, ESCALATED, EXPIRED)
+ * GET /api/public/recovery/:id
+ * Public lookup for customer self-service checkout portal
  */
-export const recordActionOutcomeController = async (req, res, next) => {
+export const getPublicRecoveryCase = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { executionId, outcome, failureReason, metadata } = req.body;
+    let rCase = null;
 
-    const result = await processActionOutcome({
-      caseId: id,
-      executionId,
-      outcome,
-      failureReason,
-      metadata
-    });
+    if (isDbConnected()) {
+      rCase = await RecoveryCase.findOne({ caseId: id });
+    }
+
+    // Fallback case data for live simulation IDs
+    if (!rCase) {
+      rCase = {
+        caseId: id,
+        amount: 12499,
+        currency: 'INR',
+        failureReason: 'INSUFFICIENT_FUNDS',
+        status: 'open',
+        customerId: 'cust_live',
+        merchantName: 'ORVIX Premium Store'
+      };
+    }
 
     return res.status(200).json({
       success: true,
-      ...result
+      case: {
+        caseId: rCase.caseId,
+        amount: rCase.amount || 12499,
+        currency: rCase.currency || 'INR',
+        failureReason: rCase.failureReason || 'INSUFFICIENT_FUNDS',
+        status: rCase.status || 'open',
+        merchantName: 'ORVIX Premium Store',
+        description: 'Invoice Subscription Payment Recovery'
+      }
     });
   } catch (error) {
     next(error);
   }
 };
+
+/**
+ * POST /api/public/recovery/:id/pay
+ * Customer authorizes payment on public checkout portal
+ */
+export const payPublicRecoveryCase = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { paymentMethod = 'upi' } = req.body;
+
+    let rCase = null;
+    if (isDbConnected()) {
+      rCase = await RecoveryCase.findOne({ caseId: id });
+    }
+
+    if (rCase) {
+      rCase.status = 'recovered';
+      rCase.recoveredAmount = rCase.amount;
+      rCase.closedAt = new Date();
+      await rCase.save();
+
+      await AuditLog.create({
+        caseId: id,
+        eventType: 'CUSTOMER_PAID_PUBLIC_PORTAL',
+        actor: 'customer',
+        message: `Customer successfully authorized payment of ₹${rCase.amount} via public recovery portal (${paymentMethod.toUpperCase()}).`,
+        metadata: { paymentMethod, recoveredAmount: rCase.amount }
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: 'Payment completed successfully via recovery portal',
+      caseId: id,
+      status: 'recovered'
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * POST /api/recovery/cases/:id/outcome
+ * Record outcome of a recovery action (RECOVERED, FAILED, PENDING, STOPPED, ESCALATED, EXPIRED)
+ */
+export const recordActionOutcomeController = async (req, res, next) => {
+      try {
+        const { id } = req.params;
+        const { executionId, outcome, failureReason, metadata } = req.body;
+
+        const result = await processActionOutcome({
+          caseId: id,
+          executionId,
+          outcome,
+          failureReason,
+          metadata
+        });
+
+        return res.status(200).json({
+          success: true,
+          ...result
+        });
+      } catch (error) {
+        next(error);
+      }
+    };
+
+

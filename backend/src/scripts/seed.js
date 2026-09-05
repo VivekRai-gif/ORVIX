@@ -7,7 +7,8 @@ import {
   RecoveryPrediction,
   ActionExecution,
   AuditLog,
-  Policy
+  Policy,
+  User
 } from '../models/index.js';
 
 dotenv.config();
@@ -33,7 +34,18 @@ const seedDatabase = async () => {
     await ActionExecution.deleteMany({});
     await AuditLog.deleteMany({});
     await Policy.deleteMany({});
+    await User.deleteMany({});
     console.log('[Seed] Collections cleared successfully.');
+
+    // 0. Seed Demo User
+    console.log('[Seed] Creating Demo Merchant User...');
+    const demoUser = await User.create({
+      name: 'Demo Merchant',
+      email: 'merchant@orvix.com',
+      password: 'password123',
+      role: 'merchant'
+    });
+    console.log(`[Seed] Created Demo User: ${demoUser.email} / password123`);
 
     // 1. Create 10 Customers
     console.log('[Seed] Inserting 10 Customers...');
