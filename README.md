@@ -18,6 +18,25 @@ When payments fail or checkout is abandoned, traditional platforms trigger blank
 > *For this specific revenue event, what should we do next to maximize the probability of recovery while minimizing unnecessary intervention?*
 
 ---
+### 💳 Watch ORVIX in Action
+
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=JKn0ZJKEY-E">
+    <img src="https://img.youtube.com/vi/JKn0ZJKEY-E/maxresdefault.jpg"
+         alt="ORVIX Product Demo"
+         width="900">
+  </a>
+</p>
+
+> **What if a failed payment didn't mean lost revenue?**
+
+**ORVIX — AI Revenue Recovery Intelligence & Orchestrator**
+
+**Detect → Diagnose → Predict → Optimize → Recover**
+
+▶️ **[Watch the full demo on YouTube](https://www.youtube.com/watch?v=JKn0ZJKEY-E)**
+
+---
 
 ## 2. Project Architecture Overview
 
